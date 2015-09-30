@@ -6,13 +6,13 @@
 
 #define DEFAULT_DEGREE 100
 
-int Poly::get(unsigned int degree) const{
+mpz_class Poly::get(unsigned int degree) const{
 	if (degree < lowestExpoent || degree >= coeffs.size())
 		return 0;
 	return coeffs[degree - lowestExpoent];
 }
 
-void Poly::set(unsigned int degree, unsigned int coeff){
+void Poly::set(unsigned int degree, mpz_class coeff){
 	if (degree < lowestExpoent){
 		unsigned int oldSize = coeffs.size();
 		unsigned int spaceRequired = lowestExpoent - degree;
@@ -42,28 +42,28 @@ unsigned int Poly::firstNonZeroCoeff() const{
 
 Poly::Poly(){
 	lowestExpoent = 0;
-	coeffs = std::vector<int>(DEFAULT_DEGREE + 1);
-
+	coeffs = std::vector<mpz_class>(DEFAULT_DEGREE + 1);
 }
 
 Poly::Poly(unsigned int maxDegree){
 	lowestExpoent = 0;
-	coeffs = std::vector<int>(maxDegree + 1);
+	coeffs = std::vector<mpz_class>(maxDegree + 1);
 }
 
 
 Poly::Poly(unsigned int minDegree, unsigned int maxDegree){
 	lowestExpoent = minDegree;
-	coeffs = std::vector<int>(maxDegree - minDegree + 1);
+	coeffs = std::vector<mpz_class>(maxDegree - minDegree + 1);
 }
 
 
 Poly::Poly(std::string strPoly){
 	lowestExpoent = 0;
-	coeffs = std::vector<int>(DEFAULT_DEGREE + 1);
+	coeffs = std::vector<mpz_class>(DEFAULT_DEGREE + 1);
 
 	unsigned int exp;
-	int signal, coef;
+	int signal;
+	mpz_class coef;
 	
 	try {
 		std::regex regexToMonomial("[+-]?\\s*\\d+(\\*?x\\^\\d+)?");
@@ -81,7 +81,7 @@ Poly::Poly(std::string strPoly){
 			std::regex regexToCoeffDegree("\\d+");
 	   	 	std::sregex_iterator nextCD(monomial.begin(), monomial.end(), regexToCoeffDegree);
 			std::smatch matchCoeff = *nextCD;
-			coef = std::stoi(matchCoeff.str());
+			coef = matchCoeff.str();
 			nextCD++;
 			std::smatch matchExp = *nextCD;
 			if (nextCD == end){
@@ -95,11 +95,6 @@ Poly::Poly(std::string strPoly){
 	  // Syntax error in the regular expression
 	}
 }
-
-
-
-
-
 
 
 Poly::~Poly(){
@@ -136,11 +131,11 @@ Poly operator*(const Poly& p, const Poly& q) {
 	unsigned int d = pDegree + qDegree;
 	Poly r = Poly(d);
 	for (unsigned int i = 0; i <= pDegree; i++){
-		int pCoeff = p.get(i);
+		mpz_class pCoeff = p.get(i);
 		if (0 != pCoeff){
 			Poly tmp = Poly(d);
 			for (unsigned int j = 0; j <= qDegree; j++){
-				int qCoeff = q.get(j);
+				mpz_class qCoeff = q.get(j);
 				tmp.set(i + j, pCoeff * qCoeff);
 			}
 			r += tmp;
@@ -151,12 +146,11 @@ Poly operator*(const Poly& p, const Poly& q) {
 
 
 std::ostream& operator<<(std::ostream& os, const Poly& p) {
-	
 	try{
 		unsigned int first = p.firstNonZeroCoeff();
 		unsigned int degree = p.degree();
 		for (unsigned int i = first; i <= degree; i++){
-			int coeff = p.get(i);
+			mpz_class coeff = p.get(i);
 			if (coeff != 0){
 				if (coeff > 0)
 					os << " +" << coeff;
@@ -169,9 +163,8 @@ std::ostream& operator<<(std::ostream& os, const Poly& p) {
 		}
 	}catch (NullPolynomialException& e){
 		// if p is a null polynomial 
-		os << "0";
+		os << " 0";
 	}
-
-	return os;	
+	return os;
 }
 
