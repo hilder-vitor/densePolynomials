@@ -97,6 +97,18 @@ Poly::Poly(std::string strPoly){
 }
 
 
+Poly Poly::encode(mpz_class intValue){
+	Poly p;
+	unsigned int i = 0;
+	std::cout << "encoding " << intValue << std::endl;
+	for (unsigned int i = 0; intValue > 0; i++){
+		mpz_class bit = intValue % 2;
+		intValue = intValue / 2;
+		p.set(i, bit);
+	}
+	return p;
+}
+
 Poly::~Poly(){
 //	delete[] coeffs;
 }

@@ -32,7 +32,10 @@ class Poly{
 	Poly(unsigned int minDegree, unsigned int maxDegree);
 	Poly(std::string strPoly);
 
+	static Poly encode(mpz_class intValue);
+
 	~Poly();
+
 
 	mpz_class get(unsigned int degree) const;
 	void set(unsigned int degree, mpz_class coeff);
