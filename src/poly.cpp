@@ -211,6 +211,20 @@ Poly operator/(const Poly& p, const Poly& q) {
 	return quot;
 }
 
+bool operator==(const Poly& p, const Poly& q) {
+	unsigned int pDegree = p.degree();
+	unsigned int firstP = p.firstNonZeroCoeff();
+	// if they have diffent degrees or their first coefficients don't have same index
+	if (pDegree != q.degree() || firstP != q.firstNonZeroCoeff()){
+		return false;
+	}
+	for (unsigned int i = firstP; i < pDegree; i++){
+		if (p.get(i) != q.get(i))
+			return false;
+	}
+	return true;
+}
+
 std::ostream& operator<<(std::ostream& os, const Poly& p) {
 	try{
 		unsigned int first = p.firstNonZeroCoeff();

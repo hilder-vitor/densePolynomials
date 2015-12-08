@@ -54,6 +54,7 @@ Poly operator*(const Poly& p, const Poly& q);
 Poly operator*(const mpz_class& alpha, const Poly& p);
 Poly operator*(const Poly& p, const mpz_class& alpha);
 Poly operator/(const Poly& p, const Poly& q);
+bool operator==(const Poly& p, const Poly& q);
 std::ostream& operator<<(std::ostream& os, const Poly& p);
 
 #endif
