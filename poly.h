@@ -33,7 +33,10 @@ class Poly{
 	Poly(unsigned int degree, mpz_class coeff); // initialize a monomial
 	Poly(std::string strPoly);
 
+	static Poly encode(mpz_class intValue);
+
 	~Poly();
+
 
 	mpz_class get(unsigned int degree) const;
 	void set(unsigned int degree, mpz_class coeff);

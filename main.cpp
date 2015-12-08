@@ -36,6 +36,11 @@ int main(){
 		if (regex_match (line, matches, regex(expLetter + ":=\\s*(" + expPoly + ")") )){
 			unsigned int i = index(matches[1].str().at(0));
 			polys[i] = Poly(matches[2]); 
+		// if it's a definition of a polynomial from a encoding of a integer
+		}else if (regex_match (line, matches, regex(expLetter + ":=\\s*encode\\s*([0-9]+)") )){
+			unsigned int i = index(matches[1].str().at(0));
+			mpz_class intVal = mpz_class(matches[2].str());
+			polys[i] = Poly::encode(intVal); 
 		// if it's a sum, for instance:  c = a + b
 		}else if (regex_match (line, matches, regex(expLetter + "=" + expLetter + expPlus + expLetter) )){
 			unsigned int i0 = index(matches[1].str().at(0));
