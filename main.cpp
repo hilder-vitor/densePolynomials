@@ -22,7 +22,9 @@ int main(){
 	string expMonomial = "\\s*\\d+(\\*?x\\^\\d+)?";
 	string expPoly = "[+-]?" + expMonomial + "(\\s*[+-]" + expMonomial + ")*";
 	string expPlus = "\\s*\\+\\s*";
+	string expMinus = "\\s*\\-\\s*";
 	string expMult = "\\s*\\*\\s*";
+	string expDiv = "\\s*\\/\\s*";
 	string expCmdList = "\\s*[Ll][Ii][Ss][Tt]\\s*";
 	string line;
 	smatch matches;
@@ -41,11 +43,23 @@ int main(){
 			unsigned int i2 = index(matches[3].str().at(0));
 			polys[i0] = polys[i1] + polys[i2];
 			showPolynomial(matches[1].str().at(0));
+		}else if (regex_match (line, matches, regex(expLetter + "=" + expLetter + expMinus + expLetter) )){
+			unsigned int i0 = index(matches[1].str().at(0));
+			unsigned int i1 = index(matches[2].str().at(0));
+			unsigned int i2 = index(matches[3].str().at(0));
+			polys[i0] = polys[i1] - polys[i2];
+			showPolynomial(matches[1].str().at(0));
 		}else if (regex_match (line, matches, regex(expLetter + "=" + expLetter + expMult + expLetter) )){
 			unsigned int i0 = index(matches[1].str().at(0));
 			unsigned int i1 = index(matches[2].str().at(0));
 			unsigned int i2 = index(matches[3].str().at(0));
 			polys[i0] = polys[i1] * polys[i2];
+			showPolynomial(matches[1].str().at(0));
+		}else if (regex_match (line, matches, regex(expLetter + "=" + expLetter + expDiv + expLetter) )){
+			unsigned int i0 = index(matches[1].str().at(0));
+			unsigned int i1 = index(matches[2].str().at(0));
+			unsigned int i2 = index(matches[3].str().at(0));
+			polys[i0] = polys[i1] / polys[i2];
 			showPolynomial(matches[1].str().at(0));
 		}else if (regex_match (line, matches, regex(expLetter + "\\?\\s*") )){
 			showPolynomial(matches[1].str().at(0));

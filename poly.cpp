@@ -40,6 +40,11 @@ unsigned int Poly::firstNonZeroCoeff() const{
 	throw NullPolynomialException();
 }
 
+mpz_class Poly::getFinalCoeff() const{
+	return coeffs[degree()];
+}
+
+
 Poly::Poly(){
 	lowestExpoent = 0;
 	coeffs = std::vector<mpz_class>(DEFAULT_DEGREE + 1);
@@ -56,6 +61,11 @@ Poly::Poly(unsigned int minDegree, unsigned int maxDegree){
 	coeffs = std::vector<mpz_class>(maxDegree - minDegree + 1);
 }
 
+Poly::Poly(unsigned int degree, mpz_class coeff){ // initialize a monomial
+	lowestExpoent = 0;
+	coeffs = std::vector<mpz_class>(degree + 1);
+	coeffs[degree] = coeff;
+}
 
 Poly::Poly(std::string strPoly){
 	lowestExpoent = 0;
@@ -110,12 +120,24 @@ unsigned int Poly::degree() const{
 
 Poly operator+(const Poly& p, const Poly& q) {
 	unsigned int d = std::max(p.degree(), q.degree());
-	Poly r = Poly(d);
-	for (unsigned int i = 0; i <= d; i++){
+	unsigned int first = std::min(p.firstNonZeroCoeff(), q.firstNonZeroCoeff());
+	Poly r = Poly(first, d);
+	for (unsigned int i = first; i <= d; i++){
 		r.set(i, p.get(i) + q.get(i));
 	}
 	return r;
 }
+
+Poly operator-(const Poly& p, const Poly& q){
+	unsigned int d = std::max(p.degree(), q.degree());
+	unsigned int first = std::min(p.firstNonZeroCoeff(), q.firstNonZeroCoeff());
+	Poly r = Poly(first, d);
+	for (unsigned int i = first; i <= d; i++){
+		r.set(i, p.get(i) - q.get(i));
+	}
+	return r;
+}
+
 
 Poly& Poly::operator+=(const Poly& q) {
 	unsigned int d = std::max(this->degree(), q.degree());
@@ -144,6 +166,38 @@ Poly operator*(const Poly& p, const Poly& q) {
 	return r;
 }
 
+Poly operator*(const mpz_class& alpha, const Poly& p){
+	unsigned int first = p.firstNonZeroCoeff();
+	unsigned int degree = p.degree();
+	Poly result = Poly(first, degree);
+	for (unsigned int i = first; i <= degree; i++){
+		mpz_class coeff = p.get(i);
+		result.set(i, coeff * alpha);
+	}
+	return result;
+}
+Poly operator*(const Poly& p, const mpz_class& alpha){
+	return alpha * p;
+}
+
+Poly operator/(const Poly& p, const Poly& q) {
+	Poly remainder = p;
+	Poly quot = Poly();
+	mpz_class coeff_p;
+	mpz_class coeff_q;
+	int tmp;
+	
+	while (remainder.degree() >= q.degree()){
+	
+		mpz_class div = remainder.getFinalCoeff() / q.getFinalCoeff();
+
+		unsigned int coeffDegree = remainder.degree() - q.degree();
+		Poly monomial = Poly(coeffDegree, div);
+		remainder = remainder - monomial * q; //XXX: it would be much more efficient if I had a monomial class
+		quot.set(coeffDegree, div);
+	}
+	return quot;
+}
 
 std::ostream& operator<<(std::ostream& os, const Poly& p) {
 	try{

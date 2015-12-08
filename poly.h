@@ -30,6 +30,7 @@ class Poly{
 	Poly();
 	Poly(unsigned int maxDegree);
 	Poly(unsigned int minDegree, unsigned int maxDegree);
+	Poly(unsigned int degree, mpz_class coeff); // initialize a monomial
 	Poly(std::string strPoly);
 
 	~Poly();
@@ -38,13 +39,18 @@ class Poly{
 	void set(unsigned int degree, mpz_class coeff);
 
 	unsigned int firstNonZeroCoeff() const;
+	mpz_class getFinalCoeff() const;
 	unsigned int degree() const;
 
 	Poly& operator+=(const Poly& q);
 };
 
 Poly operator+(const Poly& p, const Poly& q);
+Poly operator-(const Poly& p, const Poly& q);
 Poly operator*(const Poly& p, const Poly& q);
+Poly operator*(const mpz_class& alpha, const Poly& p);
+Poly operator*(const Poly& p, const mpz_class& alpha);
+Poly operator/(const Poly& p, const Poly& q);
 std::ostream& operator<<(std::ostream& os, const Poly& p);
 
 #endif
