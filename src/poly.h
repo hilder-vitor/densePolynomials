@@ -46,6 +46,9 @@ class Poly{
 	unsigned int degree() const;
 
 	Poly& operator+=(const Poly& q);
+
+
+	void dump() const;
 };
 
 Poly operator+(const Poly& p, const Poly& q);

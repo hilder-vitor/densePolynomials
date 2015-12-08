@@ -7,7 +7,7 @@
 #define DEFAULT_DEGREE 100
 
 mpz_class Poly::get(unsigned int degree) const{
-	if (degree < lowestExpoent || degree >= coeffs.size())
+	if (degree < lowestExpoent || degree >= coeffs.size() + lowestExpoent)
 		return 0;
 	return coeffs[degree - lowestExpoent];
 }
@@ -110,7 +110,6 @@ Poly::Poly(std::string strPoly){
 Poly Poly::encode(mpz_class intValue){
 	Poly p;
 	unsigned int i = 0;
-	std::cout << "encoding " << intValue << std::endl;
 	for (unsigned int i = 0; intValue > 0; i++){
 		mpz_class bit = intValue % 2;
 		intValue = intValue / 2;
@@ -124,10 +123,20 @@ Poly::~Poly(){
 }
 
 unsigned int Poly::degree() const{
-	for (unsigned int i = coeffs.size(); i > 0; i--)
+	for (unsigned int i = coeffs.size(); i >= 0; i--)
 		if (0 != coeffs[i])
 			return i + lowestExpoent;
-	return 0;
+	throw NullPolynomialException(); // degree is not defined to zero polynomials
+}
+
+void Poly::dump() const{
+
+	std::cout << "degree = " << degree() << std::endl;
+	std::cout << "first coefficient is a_ = " << firstNonZeroCoeff() << std::endl;
+	for (unsigned int i = 0; i <= coeffs.size(); i++){
+		std::cout << "coeffs[" << i << "] = " << coeffs[i] << std::endl;
+	}
+
 }
 
 Poly operator+(const Poly& p, const Poly& q) {
