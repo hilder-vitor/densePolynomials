@@ -29,11 +29,11 @@ all: gtest_lib_bin poly_operators_test
 # compile the google lib in order to include a single header in our tests' sources codes
 gtest_lib_bin: $(GOOGLE_TEST_SRC)
 	$(CXX) $(CPPFLAGS) -I$(GOOGLE_DIR) $(CXXFLAGS) -c \
-            $(GOOGLE_DIR)/src/gtest-all.cc -o google_test_lib
+            $(GOOGLE_DIR)/src/gtest-all.cc -o $(GOOGLE_DIR)/google_test_lib
 
 # unit tests to operators
 poly_operators_test: poly.o gtest_lib_bin poly_operators_test.cpp $(GOOGLE_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) poly_operators_test.cpp google_test_lib $(SRC_DIR)/poly.o -lpthread $(GMP_LIBS) -o poly_operators_test
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) poly_operators_test.cpp $(GOOGLE_DIR)/google_test_lib $(SRC_DIR)/poly.o -lpthread $(GMP_LIBS) -o poly_operators_test
 
 
 
