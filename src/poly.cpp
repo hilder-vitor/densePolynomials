@@ -105,11 +105,14 @@ Poly::Poly(unsigned int minDegree, unsigned int maxDegree){
 }
 
 Poly::Poly(unsigned int degree, mpz_class coeff){ // initialize a monomial
-	lowestExpoent = 0;
-	if ((isZeroPolynomial = (0 != coeff)))
+	lowestExpoent = degree;
+	if ((isZeroPolynomial = (0 == coeff))){
 		firstNonZero = lastNonZero = degree;
-	coeffs = std::vector<mpz_class>(degree + 1);
-	coeffs[degree] = coeff;
+	}
+	coeffs = std::vector<mpz_class>(1);
+	coeffs[0] = coeff;
+	std::cout << "__++ degree = " << degree << " ++___" << std::endl;
+	this->dump();
 }
 
 Poly::Poly(std::string strPoly){
@@ -220,14 +223,19 @@ Poly operator-(const Poly& p, const Poly& q){
 
 
 Poly& Poly::operator+=(const Poly& q) {
-	unsigned int d = std::max(this->degree(), q.degree());
-	for (unsigned int i = 0; i <= d; i++){
-		this->set(i, this->get(i) + q.get(i));
+	if (!q.isZero()){
+		unsigned int ini = q.indexFirstNonZeroCoeff();
+		unsigned int end = q.degree();
+		for (unsigned int i = ini; i <= end; i++)
+			this->set(i, this->get(i) + q.get(i));
 	}
 	return *this;
 }
 
 Poly operator*(const Poly& p, const Poly& q) {
+	if (p.isZero() || q.isZero())
+		return Poly(10); // return a zero polynomial with expected max degree equals to 10
+
 	unsigned int pDegree = p.degree();
 	unsigned int qDegree = q.degree();
 	unsigned int d = pDegree + qDegree;
@@ -235,12 +243,9 @@ Poly operator*(const Poly& p, const Poly& q) {
 	for (unsigned int i = 0; i <= pDegree; i++){
 		mpz_class pCoeff = p.get(i);
 		if (0 != pCoeff){
-			Poly tmp = Poly(d);
-			for (unsigned int j = 0; j <= qDegree; j++){
-				mpz_class qCoeff = q.get(j);
-				tmp.set(i + j, pCoeff * qCoeff);
-			}
-			r += tmp;
+			Poly monomial = Poly(i, pCoeff);
+			std::cout << "monomial = " << monomial << std::endl;
+			r += monomial * q;
 		}
 	}
 	return r;

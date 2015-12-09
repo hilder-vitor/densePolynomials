@@ -2,6 +2,38 @@
 #include "../src/poly.h"
 #include <stdio.h>
 
+TEST (PolyComparision, PolyEquality) {
+	Poly a = Poly("12343210*x^100 + 897*x^98 + 184*x^89 + 1*x^85");
+	Poly b = Poly("890*x^98 + 100*x^75 - 50");
+	Poly c = Poly("-50");
+	Poly d = Poly("1*x^5");
+	Poly zero = Poly("0");
+
+	EXPECT_TRUE(a == a);
+	EXPECT_FALSE(b == a);
+	EXPECT_FALSE(a == b);
+	EXPECT_FALSE(a == zero);
+	EXPECT_FALSE(zero == a);
+	EXPECT_FALSE(zero == b);
+	EXPECT_TRUE(zero == zero);
+	EXPECT_FALSE(b == c);
+	c.set(98, 890);
+	c.set(75, 100);
+	EXPECT_TRUE(b == c);
+	EXPECT_FALSE(c == a);
+	a.set(89, 0);
+	a.set(85, 0);
+	a.set(0, -50);
+	c.set(100, 12343210);
+	c.set(75, 0);
+	c.set(98, 897);
+	EXPECT_TRUE(a == c);
+	EXPECT_FALSE(a == d);
+	EXPECT_FALSE(b == d);
+	EXPECT_FALSE(c == d);
+}
+
+
 TEST (PolyAddition, TwoAdditions) { 
 	Poly a = Poly("        2*x^4 + 4*x^2      -1");
 	Poly b = Poly("1*x^5         + 4*x^2 -1*x^1    ");
@@ -64,36 +96,22 @@ TEST (PolySubtraction, ManySubtractions) {
 	EXPECT_EQ (c_minus_a_minus_ten, c - a - ten - zero);
 }
 
-TEST (PolyComparision, PolyEquality) {
-	Poly a = Poly("12343210*x^100 + 897*x^98 + 184*x^89 + 1*x^85");
-	Poly b = Poly("890*x^98 + 100*x^75 - 50");
-	Poly c = Poly("-50");
-	Poly d = Poly("1*x^5");
+TEST (PolyMultiplication, ManyProducts) { 
 	Poly zero = Poly("0");
+	Poly a = Poly("192*x^10 + 72*x^9 -19282*x^8 - 1*x^7 + 831*x^5 -4*x^4 + 5829*x^3 + 77*x^2 - 91*x^1 + 9");
+	EXPECT_EQ (zero, a * zero);
+	EXPECT_EQ (zero, zero * a);
+	
+	Poly b = Poly("291*x^13 + 22*x^12 -29291*x^11 - 1*x^10 - 138*x^8 -4*x^7 + 9825*x^6 + 6*x^6 - 19*x^5 - 46*x^4");
 
-	EXPECT_TRUE(a == a);
-	EXPECT_FALSE(b == a);
-	EXPECT_FALSE(a == b);
-	EXPECT_FALSE(a == zero);
-	EXPECT_FALSE(zero == a);
-	EXPECT_FALSE(zero == b);
-	EXPECT_TRUE(zero == zero);
-	EXPECT_FALSE(b == c);
-	c.set(98, 890);
-	c.set(75, 100);
-	EXPECT_TRUE(b == c);
-	EXPECT_FALSE(c == a);
-	a.set(89, 0);
-	a.set(85, 0);
-	a.set(0, -50);
-	c.set(100, 12343210);
-	c.set(75, 0);
-	c.set(98, 897);
-	EXPECT_TRUE(a == c);
-	EXPECT_FALSE(a == d);
-	EXPECT_FALSE(b == d);
-	EXPECT_FALSE(c == d);
+	Poly a_times_b = Poly("55872*x^23 + 25176*x^22 - 11233350*x^21 - 2533639*x^20 + 564788968*x^19 + 263898*x^18+ 6415*x^17 - 18096490*x^16+1048428*x^15-360333560*x^14 - 2022082*x^13+ 3549821*x^12 + 7101693*x^11 - 89064*x^10 + 57278999*x^9 + 645542*x^8-1164254*x^7+ 86666*x^6+4015*x^5 - 414*x^4");
+	std::cout << "EXPECT_EQ (a_times_b, a * b);" << std::endl;
+	EXPECT_EQ (a_times_b, a * b);
+	std::cout << "EXPECT_EQ (a_times_b, b * a);" << std::endl;
+	EXPECT_EQ (a_times_b, b * a);
+
 }
+
 
 GTEST_API_ int main(int argc, char **argv) {
 	printf("Running main() from gtest_main.cc\n");
