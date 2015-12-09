@@ -64,6 +64,37 @@ TEST (PolySubtraction, ManySubtractions) {
 	EXPECT_EQ (c_minus_a_minus_ten, c - a - ten - zero);
 }
 
+TEST (PolyComparision, PolyEquality) {
+	Poly a = Poly("12343210*x^100 + 897*x^98 + 184*x^89 + 1*x^85");
+	Poly b = Poly("890*x^98 + 100*x^75 - 50");
+	Poly c = Poly("-50");
+	Poly d = Poly("1*x^5");
+	Poly zero = Poly("0");
+
+	EXPECT_TRUE(a == a);
+	EXPECT_FALSE(b == a);
+	EXPECT_FALSE(a == b);
+	EXPECT_FALSE(a == zero);
+	EXPECT_FALSE(zero == a);
+	EXPECT_FALSE(zero == b);
+	EXPECT_TRUE(zero == zero);
+	EXPECT_FALSE(b == c);
+	c.set(98, 890);
+	c.set(75, 100);
+	EXPECT_TRUE(b == c);
+	EXPECT_FALSE(c == a);
+	a.set(89, 0);
+	a.set(85, 0);
+	a.set(0, -50);
+	c.set(100, 12343210);
+	c.set(75, 0);
+	c.set(98, 897);
+	EXPECT_TRUE(a == c);
+	EXPECT_FALSE(a == d);
+	EXPECT_FALSE(b == d);
+	EXPECT_FALSE(c == d);
+}
+
 GTEST_API_ int main(int argc, char **argv) {
 	printf("Running main() from gtest_main.cc\n");
 	testing::InitGoogleTest(&argc, argv);
