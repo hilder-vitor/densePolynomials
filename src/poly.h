@@ -53,6 +53,7 @@ class Poly{
 
 	Poly& operator+=(const Poly& q);
 
+	bool isZero() const;
 
 	void dump() const;
 };
