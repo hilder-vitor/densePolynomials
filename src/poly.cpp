@@ -82,7 +82,7 @@ unsigned int Poly::indexFirstNonZeroCoeff() const{
 mpz_class Poly::getFinalCoeff() const{
 	if (isZeroPolynomial)
 		throw NullPolynomialException();
-	return coeffs[firstNonZero];
+	return coeffs[lastNonZero];
 }
 
 Poly::Poly(){
@@ -290,6 +290,8 @@ bool operator==(const Poly& p, const Poly& q) {
 	if (p.isZero()){
 		return q.isZero();
 	}
+	if (q.isZero())
+		return false; // p is not zero at this point
 	unsigned int pDegree = p.degree();
 	unsigned int firstP = p.indexFirstNonZeroCoeff();
 	// if they have diffent degrees or their first coefficients don't have same index
