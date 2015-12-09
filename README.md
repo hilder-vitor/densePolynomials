@@ -7,18 +7,20 @@ A simple library for dense-polynomials arithmetic
 
 * Any C++ compiler that supports the C++11
 
+* [Optional] If you want to run the tests, then you must use GoogleTest (https://github.com/google/googletest). To do so, create a directory called googletest inside tests/ and decompress the googletest lib inside tests/googletest. Then, run the tests/Makefile. 
+
 ## How to use
 
 The following code creates some polynomials and operates over them:
 
-```C
+```C++
   #include"poly.h"
   #include<iostream>
   
   int main(){
     Poly a; // default constructor
-    a.set(2, 1233); // setting the second coefficient (associated with x^3)
-    a.set(3, -92938199292929293888439311221); // setting the third coefficient
+    a.set(2, 1233); // setting the second coefficient (so a(x) = 1233*x^2)
+    a.set(3, -92938199292929293888439311221); // now a(x) = -92938199292929293888439311221*x^3 + 1233*x^2
     
     Poly b(50); // using this constructor because I know that b will has degree 50
     for (unsigned int i = 0; i <= 50; i++){
