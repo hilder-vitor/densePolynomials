@@ -24,6 +24,12 @@ class Poly{
 	unsigned int lowestExpoent; 
 
 	unsigned int firstNonZero;
+	unsigned int lastNonZero;
+
+	bool isZeroPolynomial;
+
+	void updateLast();
+	void updateFirst();
 
 	public:
 
@@ -41,7 +47,7 @@ class Poly{
 	mpz_class get(unsigned int degree) const;
 	void set(unsigned int degree, mpz_class coeff);
 
-	unsigned int firstNonZeroCoeff() const;
+	unsigned int indexFirstNonZeroCoeff() const;
 	mpz_class getFinalCoeff() const;
 	unsigned int degree() const;
 

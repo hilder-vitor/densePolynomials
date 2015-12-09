@@ -12,6 +12,32 @@ mpz_class Poly::get(unsigned int degree) const{
 	return coeffs[degree - lowestExpoent];
 }
 
+
+void Poly::updateLast(){
+	bool found = false;
+	for (unsigned int i = lastNonZero + 1; i > 0 && !found; i--){
+		if (0 != coeffs[i - 1]){
+			lastNonZero = i - 1;
+			found = true;
+		}
+	}
+	isZeroPolynomial = !found;
+	/* XXX: maybe resize since I know it is zero */
+}
+
+
+void Poly::updateFirst(){
+	bool found = false;
+	for (unsigned int i = firstNonZero; i <= lastNonZero && !found; i++){
+		if (0 != coeffs[i]){
+			firstNonZero = i;
+			found = true;
+		}
+	}
+	isZeroPolynomial = !found;
+	/* XXX: maybe resize since I know it is zero */
+}
+
 void Poly::set(unsigned int degree, mpz_class coeff){
 	if (degree < lowestExpoent){
 		unsigned int oldSize = coeffs.size();
@@ -30,39 +56,57 @@ void Poly::set(unsigned int degree, mpz_class coeff){
 	}
 
 	coeffs[degree - lowestExpoent] = coeff;
+	if (0 == coeff){
+		if (degree == lastNonZero) // if a zero was inserted into a_n
+			updateLast();
+		else if (degree == firstNonZero) // if the first nonzero coefficient became zero
+			updateFirst();
+	}else{
+		if (isZeroPolynomial)
+			firstNonZero = lastNonZero = degree;
+		else if (degree < firstNonZero)
+			firstNonZero = degree;
+		else if (degree > lastNonZero)
+			lastNonZero = degree;
+	}
 }
 
 
-unsigned int Poly::firstNonZeroCoeff() const{
-	for (unsigned int i = 0; i < coeffs.size(); i++)
-		if (0 != coeffs[i])
-			return i + lowestExpoent;
-	throw NullPolynomialException();
+unsigned int Poly::indexFirstNonZeroCoeff() const{
+	if (isZeroPolynomial)
+		throw NullPolynomialException();
+	return firstNonZero;
 }
 
 mpz_class Poly::getFinalCoeff() const{
-	return coeffs[degree()];
+	if (isZeroPolynomial)
+		throw NullPolynomialException();
+	return coeffs[firstNonZero];
 }
-
 
 Poly::Poly(){
 	lowestExpoent = 0;
+	isZeroPolynomial = true;
 	coeffs = std::vector<mpz_class>(DEFAULT_DEGREE + 1);
 }
 
 Poly::Poly(unsigned int maxDegree){
 	lowestExpoent = 0;
+	isZeroPolynomial = true;
 	coeffs = std::vector<mpz_class>(maxDegree + 1);
 }
 
 
 Poly::Poly(unsigned int minDegree, unsigned int maxDegree){
 	lowestExpoent = minDegree;
+	isZeroPolynomial = true;
 	coeffs = std::vector<mpz_class>(maxDegree - minDegree + 1);
 }
 
 Poly::Poly(unsigned int degree, mpz_class coeff){ // initialize a monomial
 	lowestExpoent = 0;
+	if ((isZeroPolynomial = (0 != coeff)))
+		firstNonZero = lastNonZero = degree;
 	coeffs = std::vector<mpz_class>(degree + 1);
 	coeffs[degree] = coeff;
 }
@@ -123,16 +167,15 @@ Poly::~Poly(){
 }
 
 unsigned int Poly::degree() const{
-	for (unsigned int i = coeffs.size(); i >= 0; i--)
-		if (0 != coeffs[i])
-			return i + lowestExpoent;
-	throw NullPolynomialException(); // degree is not defined to zero polynomials
+	if (isZeroPolynomial)
+		throw NullPolynomialException(); // degree is not defined to zero polynomials
+	return lastNonZero;
 }
 
 void Poly::dump() const{
 
 	std::cout << "degree = " << degree() << std::endl;
-	std::cout << "first coefficient is a_ = " << firstNonZeroCoeff() << std::endl;
+	std::cout << "first coefficient is a_ = " << indexFirstNonZeroCoeff() << std::endl;
 	for (unsigned int i = 0; i <= coeffs.size(); i++){
 		std::cout << "coeffs[" << i << "] = " << coeffs[i] << std::endl;
 	}
@@ -141,7 +184,7 @@ void Poly::dump() const{
 
 Poly operator+(const Poly& p, const Poly& q) {
 	unsigned int d = std::max(p.degree(), q.degree());
-	unsigned int first = std::min(p.firstNonZeroCoeff(), q.firstNonZeroCoeff());
+	unsigned int first = std::min(p.indexFirstNonZeroCoeff(), q.indexFirstNonZeroCoeff());
 	Poly r = Poly(first, d);
 	for (unsigned int i = first; i <= d; i++){
 		r.set(i, p.get(i) + q.get(i));
@@ -151,7 +194,7 @@ Poly operator+(const Poly& p, const Poly& q) {
 
 Poly operator-(const Poly& p, const Poly& q){
 	unsigned int d = std::max(p.degree(), q.degree());
-	unsigned int first = std::min(p.firstNonZeroCoeff(), q.firstNonZeroCoeff());
+	unsigned int first = std::min(p.indexFirstNonZeroCoeff(), q.indexFirstNonZeroCoeff());
 	Poly r = Poly(first, d);
 	for (unsigned int i = first; i <= d; i++){
 		r.set(i, p.get(i) - q.get(i));
@@ -188,7 +231,7 @@ Poly operator*(const Poly& p, const Poly& q) {
 }
 
 Poly operator*(const mpz_class& alpha, const Poly& p){
-	unsigned int first = p.firstNonZeroCoeff();
+	unsigned int first = p.indexFirstNonZeroCoeff();
 	unsigned int degree = p.degree();
 	Poly result = Poly(first, degree);
 	for (unsigned int i = first; i <= degree; i++){
@@ -197,6 +240,7 @@ Poly operator*(const mpz_class& alpha, const Poly& p){
 	}
 	return result;
 }
+
 Poly operator*(const Poly& p, const mpz_class& alpha){
 	return alpha * p;
 }
@@ -209,9 +253,7 @@ Poly operator/(const Poly& p, const Poly& q) {
 	int tmp;
 	
 	while (remainder.degree() >= q.degree()){
-	
 		mpz_class div = remainder.getFinalCoeff() / q.getFinalCoeff();
-
 		unsigned int coeffDegree = remainder.degree() - q.degree();
 		Poly monomial = Poly(coeffDegree, div);
 		remainder = remainder - monomial * q; //XXX: it would be much more efficient if I had a monomial class
@@ -222,9 +264,9 @@ Poly operator/(const Poly& p, const Poly& q) {
 
 bool operator==(const Poly& p, const Poly& q) {
 	unsigned int pDegree = p.degree();
-	unsigned int firstP = p.firstNonZeroCoeff();
+	unsigned int firstP = p.indexFirstNonZeroCoeff();
 	// if they have diffent degrees or their first coefficients don't have same index
-	if (pDegree != q.degree() || firstP != q.firstNonZeroCoeff()){
+	if (pDegree != q.degree() || firstP != q.indexFirstNonZeroCoeff()){
 		return false;
 	}
 	for (unsigned int i = firstP; i < pDegree; i++){
@@ -236,7 +278,7 @@ bool operator==(const Poly& p, const Poly& q) {
 
 std::ostream& operator<<(std::ostream& os, const Poly& p) {
 	try{
-		unsigned int first = p.firstNonZeroCoeff();
+		unsigned int first = p.indexFirstNonZeroCoeff();
 		unsigned int degree = p.degree();
 		for (unsigned int i = first; i <= degree; i++){
 			mpz_class coeff = p.get(i);
