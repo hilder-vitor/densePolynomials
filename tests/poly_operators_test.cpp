@@ -2,10 +2,6 @@
 #include "../src/poly.h"
 #include <stdio.h>
 
-double square(double x){
-	return x*x;
-}
-
 TEST (PolyAddition, TwoAdditions) { 
 	Poly a = Poly("        2*x^4 + 4*x^2      -1");
 	Poly b = Poly("1*x^5         + 4*x^2 -1*x^1    ");
@@ -26,6 +22,15 @@ TEST (PolyAddition, TwoAdditions) {
 	EXPECT_EQ (b, zero + b);
 
 }
+
+TEST (PolyAddition, MoreThanTwoAdditions) { 
+	Poly a = Poly("                                       2*x^4 + 4*x^3      -1");
+	Poly b = Poly("              -1*x^10 + 5*x^8 -2*x^5         - 4*x^3");
+	Poly a_plus_b_plus_a = Poly("-1*x^10 + 5*x^8 -2*x^5 + 4*x^4 + 4*x^3 - 2");
+	EXPECT_EQ (a_plus_b_plus_a, a + b + a);
+
+}
+
 
 GTEST_API_ int main(int argc, char **argv) {
 	printf("Running main() from gtest_main.cc\n");
