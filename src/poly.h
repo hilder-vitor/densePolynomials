@@ -58,13 +58,20 @@ class Poly{
 	void dump() const;
 };
 
+/* operations between polynomials */
 Poly operator+(const Poly& p, const Poly& q);
 Poly operator-(const Poly& p, const Poly& q);
 Poly operator*(const Poly& p, const Poly& q);
-Poly operator*(const mpz_class& alpha, const Poly& p);
-Poly operator*(const Poly& p, const mpz_class& alpha);
 Poly operator/(const Poly& p, const Poly& q);
 bool operator==(const Poly& p, const Poly& q);
+
+/* operations between polynomials and constants */
+Poly operator*(const mpz_class& alpha, const Poly& p);
+Poly operator*(const Poly& p, const mpz_class& alpha);
+Poly operator*(const int& alpha, const Poly& p);
+Poly operator*(const Poly& p, const int& alpha);
+
+
 std::ostream& operator<<(std::ostream& os, const Poly& p);
 
 #endif

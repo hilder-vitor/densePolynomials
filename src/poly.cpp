@@ -204,6 +204,11 @@ Poly operator+(const Poly& p, const Poly& q) {
 }
 
 Poly operator-(const Poly& p, const Poly& q){
+	if (p.isZero())
+		return -1*q;
+	if (q.isZero())
+		return p;
+
 	unsigned int d = std::max(p.degree(), q.degree());
 	unsigned int first = std::min(p.indexFirstNonZeroCoeff(), q.indexFirstNonZeroCoeff());
 	Poly r = Poly(first, d);
@@ -254,6 +259,14 @@ Poly operator*(const mpz_class& alpha, const Poly& p){
 
 Poly operator*(const Poly& p, const mpz_class& alpha){
 	return alpha * p;
+}
+
+Poly operator*(const int& alpha, const Poly& p){
+	return mpz_class(alpha) * p;	
+}
+
+Poly operator*(const Poly& p, const int& alpha){
+	return mpz_class(alpha) * p;	
 }
 
 Poly operator/(const Poly& p, const Poly& q) {
