@@ -106,13 +106,12 @@ Poly::Poly(unsigned int minDegree, unsigned int maxDegree){
 
 Poly::Poly(unsigned int degree, mpz_class coeff){ // initialize a monomial
 	lowestExpoent = degree;
-	if ((isZeroPolynomial = (0 == coeff))){
+	isZeroPolynomial = (0 == coeff);
+	if (!isZeroPolynomial){
 		firstNonZero = lastNonZero = degree;
 	}
 	coeffs = std::vector<mpz_class>(1);
 	coeffs[0] = coeff;
-	std::cout << "__++ degree = " << degree << " ++___" << std::endl;
-	this->dump();
 }
 
 Poly::Poly(std::string strPoly){
@@ -183,10 +182,16 @@ bool Poly::isZero() const{
 
 void Poly::dump() const{
 
-	std::cout << "degree = " << degree() << std::endl;
-	std::cout << "first coefficient is a_ = " << indexFirstNonZeroCoeff() << std::endl;
-	std::cout << "last coefficient is a_ = " << degree() << std::endl;
-	for (unsigned int i = 0; i <= coeffs.size(); i++){
+	if (isZeroPolynomial){
+		std::cout << "is zero polynomial" << std::endl;
+		std::cout << "degree = indefined " << lastNonZero  << std::endl;
+		std::cout << "first coefficient is a_(indefined   " << firstNonZero <<  ") = " << std::endl;
+	}else{
+		std::cout << "degree = " << degree() << std::endl;
+		std::cout << "first coefficient is a_ = " << indexFirstNonZeroCoeff() << std::endl;
+		std::cout << "last coefficient is a_ = " << degree() << std::endl;
+	}
+	for (unsigned int i = 0; i < coeffs.size(); i++){
 		std::cout << "coeffs[" << i << "] = " << coeffs[i] << std::endl;
 	}
 
@@ -244,7 +249,6 @@ Poly operator*(const Poly& p, const Poly& q) {
 		mpz_class pCoeff = p.get(i);
 		if (0 != pCoeff){
 			Poly monomial = Poly(i, pCoeff);
-			std::cout << "monomial = " << monomial << std::endl;
 			r += monomial * q;
 		}
 	}
