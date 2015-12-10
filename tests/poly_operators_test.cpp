@@ -64,11 +64,17 @@ TEST (PolyAddition, MoreThanTwoAdditions) {
 	Poly a_plus_b_plus_a = Poly("-1*x^10 + 5*x^8 -2*x^5 + 4*x^4 + 4*x^3 - 2");
 	Poly a_plus_b_plus_c = Poly("1234567891011121314151617*x^50 -1*x^10 + 1918297*x^8 -2*x^5 + 2*x^4 + 123*x^3 -5");
 	Poly a_plus_c_plus_ten = Poly("1234567891011121314151617*x^50 + 1918292*x^8 + 2*x^4 + 127*x^3 +5");
+    //std::cout << "EXPECT_EQ (a_plus_b_plus_c, (a + b) + c);" << std::endl;
 	EXPECT_EQ (a_plus_b_plus_c, (a + b) + c);
+	//std::cout << "EXPECT_EQ (a_plus_b_plus_c, b + (c + a));" << std::endl;
 	EXPECT_EQ (a_plus_b_plus_c, b + (c + a));
+	//std::cout << "EXPECT_EQ (a_plus_b_plus_c, c + a + b);" << std::endl;
 	EXPECT_EQ (a_plus_b_plus_c, c + a + b);
+	//std::cout << "EXPECT_EQ (a_plus_b_plus_a, a + b + a);" << std::endl;
 	EXPECT_EQ (a_plus_b_plus_a, a + b + a);
+	//std::cout << "EXPECT_EQ (a_plus_b_plus_a, a + b + a + zero);" << std::endl;
 	EXPECT_EQ (a_plus_b_plus_a, a + b + a + zero);
+	//std::cout << "EXPECT_EQ (a_plus_c_plus_ten, a + c + ten);" << std::endl;
 	EXPECT_EQ (a_plus_c_plus_ten, a + c + ten);
 }
 
@@ -102,13 +108,20 @@ TEST (PolyMultiplication, ManyProducts) {
 	EXPECT_EQ (zero, a * zero);
 	EXPECT_EQ (zero, zero * a);
 	
-	Poly b = Poly("291*x^13 + 22*x^12 -29291*x^11 - 1*x^10 - 138*x^8 -4*x^7 + 9825*x^6 + 6*x^6 - 19*x^5 - 46*x^4");
-
-	Poly a_times_b = Poly("55872*x^23 + 25176*x^22 - 11233350*x^21 - 2533639*x^20 + 564788968*x^19 + 263898*x^18+ 6415*x^17 - 18096490*x^16+1048428*x^15-360333560*x^14 - 2022082*x^13+ 3549821*x^12 + 7101693*x^11 - 89064*x^10 + 57278999*x^9 + 645542*x^8-1164254*x^7+ 86666*x^6+4015*x^5 - 414*x^4");
-	std::cout << "EXPECT_EQ (a_times_b, a * b);" << std::endl;
+	Poly b = Poly("291*x^13 + 22*x^12 -29291*x^11 - 1*x^10 - 138*x^8 -4*x^7 + 9825*x^6 - 19*x^5 - 46*x^4");
+	Poly a_times_b = Poly("55872*x^23 + 25176*x^22 - 11233350*x^21 - 2533639*x^20 + 564788968*x^19 + 263898*x^18+ 6415*x^17 - 18097642*x^16 + 1047996*x^15 - 360217868*x^14 - 2022076*x^13 + 3549821*x^12 + 7096707*x^11 - 89040*x^10 + 57244025*x^9 + 645080*x^8 -1163708*x^7 + 86612*x^6+4015*x^5 - 414*x^4");
 	EXPECT_EQ (a_times_b, a * b);
-	std::cout << "EXPECT_EQ (a_times_b, b * a);" << std::endl;
 	EXPECT_EQ (a_times_b, b * a);
+
+	Poly c = Poly("9187123123399411234552*x^19 + 12*x^16 + 11*x^15 - 1*x^10");
+
+	Poly a_times_c = Poly("-9*x^10 + 91*x^11 - 77*x^12 - 5829*x^13 + 4*x^14 - 732*x^15 - 893*x^16 - 244*x^17 + 84325*x^18 + 82684108110594701180800*x^19 - 836028204229346422335331*x^20 + 707408480501754665070476*x^21 + 53551740686295168086203597*x^22 - 36748492493597645150322*x^23 + 7634499315544910735682120*x^24 + 2976*x^25 - 9187123123399411232248*x^26 - 177146108065387447424631664*x^27 + 661472864884757608887744*x^28 + 1763927639692686957033984*x^29");
+
+	EXPECT_EQ (a_times_c, a * c);
+	EXPECT_EQ (a_times_c, c * a);
+
+
+	EXPECT_EQ (zero, c * a * zero);
 
 }
 

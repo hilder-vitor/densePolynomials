@@ -57,10 +57,11 @@ void Poly::set(unsigned int degree, mpz_class coeff){
 
 	coeffs[degree - lowestExpoent] = coeff;
 	if (0 == coeff){
-		if (degree == lastNonZero) // if a zero was inserted into a_n
-			updateLast();
-		else if (degree == firstNonZero) // if the first nonzero coefficient became zero
-			updateFirst();
+		if (!isZeroPolynomial)
+			if (degree == lastNonZero) // if a zero was inserted into a_n
+				updateLast();
+			else if (degree == firstNonZero) // if the first nonzero coefficient became zero
+				updateFirst();
 	}else{
 		if (isZeroPolynomial){
 			firstNonZero = lastNonZero = degree;
@@ -239,17 +240,22 @@ Poly& Poly::operator+=(const Poly& q) {
 
 Poly operator*(const Poly& p, const Poly& q) {
 	if (p.isZero() || q.isZero())
-		return Poly(10); // return a zero polynomial with expected max degree equals to 10
+		return Poly(DEFAULT_DEGREE); // return a zero polynomial with expected max degree equals to 10
 
 	unsigned int pDegree = p.degree();
 	unsigned int qDegree = q.degree();
-	unsigned int d = pDegree + qDegree;
-	Poly r = Poly(d);
-	for (unsigned int i = 0; i <= pDegree; i++){
+	unsigned int pFirst = p.indexFirstNonZeroCoeff();
+	unsigned int qFirst = q.indexFirstNonZeroCoeff();
+	Poly r = Poly(pFirst + qFirst, pDegree + qDegree);
+
+	for (unsigned int i = pFirst; i <= pDegree; i++){
 		mpz_class pCoeff = p.get(i);
 		if (0 != pCoeff){
-			Poly monomial = Poly(i, pCoeff);
-			r += monomial * q;
+			Poly monomialTimesQ = Poly();
+			for (unsigned int j = qFirst; j <= qDegree; j++){
+				monomialTimesQ.set(i + j, pCoeff * q.get(j));
+			}
+			r += monomialTimesQ;
 		}
 	}
 	return r;

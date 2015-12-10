@@ -24,7 +24,7 @@ GOOGLE_HEADERS = $(GOOGLE_DIR)/include/gtest/*.h \
 GOOGLE_TEST_SRC = $(GOOGLE_DIR)/src/*.cc $(GOOGLE_DIR)/src/*.h $(GOOGLE_HEADERS)
 
 
-all: gtest_lib_bin poly_operators_test
+all: gtest_lib_bin poly_operators_test poly_initialisations_test
 
 # compile the google lib in order to include a single header in our tests' sources codes
 gtest_lib_bin: $(GOOGLE_TEST_SRC)
@@ -36,7 +36,7 @@ poly_operators_test: poly.o gtest_lib_bin poly_operators_test.cpp $(GOOGLE_HEADE
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) poly_operators_test.cpp $(GOOGLE_DIR)/google_test_lib $(SRC_DIR)/poly.o -lpthread $(GMP_LIBS) -o poly_operators_test
 
 # unit tests to initialisations
-poly_operators_test: poly.o gtest_lib_bin poly_initialisations.cpp $(GOOGLE_HEADERS)
+poly_initialisations_test: poly.o gtest_lib_bin poly_initialisations.cpp $(GOOGLE_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) poly_initialisations.cpp $(GOOGLE_DIR)/google_test_lib $(SRC_DIR)/poly.o -lpthread $(GMP_LIBS) -o poly_initialisations_test
 
 
